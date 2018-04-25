@@ -80,14 +80,11 @@ void touchscreenLoop() {
 
 //Setup function
 void setup(void) {
-
   nonEditableSetup();  
-  
 }
 
 //Begin looping of the program
-void loop()
-{
+void loop() {
   touchscreenLoop();
 }
 
