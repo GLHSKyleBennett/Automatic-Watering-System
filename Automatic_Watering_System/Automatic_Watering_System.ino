@@ -80,7 +80,8 @@ void touchscreenLoop() {
 
 //Setup function
 void setup(void) {
-  nonEditableSetup();  
+  nonEditableSetup();
+  editableSetup();  
 }
 
 //Begin looping of the program
@@ -88,6 +89,45 @@ void loop() {
   touchscreenLoop();
 }
 
+void editableSetup() {
+  //Initialize Sensors
+  int sensorPinOne = A6;
+  int sensorPinTwo = A7;
+  int sensorPinThree = A8;
+  int sensorPinFour = A9;
+  int sensorPinFive = A10;
+
+  pinMode(sensorPinOne, INPUT);
+  pinMode(sensorPinTwo, INPUT);
+  pinMode(sensorPinThree, INPUT);
+  pinMode(sensorPinFour, INPUT);
+  pinMode(sensorPinFive, INPUT);
+
+  int sensorPowerOne = 7;
+  int sensorPowerTwo = 8;
+  int sensorPowerThree = 9;
+  int sensorPowerFour = 10;
+  int sensorPowerFive = 11;
+
+  pinMode(sensorPowerOne, OUTPUT);
+  pinMode(sensorPowerTwo, OUTPUT);
+  pinMode(sensorPowerThree, OUTPUT);
+  pinMode(sensorPowerFour, OUTPUT);
+  pinMode(sensorPowerFive, OUTPUT);
+
+  //Initialize Valves
+  int valvePinOne = 2;
+  int valvePinTwo = 3;
+  int valvePinThree = 4;
+  int valvePinFour = 5;
+  int valvePinFive = 6;
+
+  pinMode(valvePinOne, OUTPUT);
+  pinMode(valvePinTwo, OUTPUT);
+  pinMode(valvePinThree, OUTPUT);
+  pinMode(valvePinFour, OUTPUT);
+  pinMode(valvePinFive, OUTPUT);
+}
 
 
 
