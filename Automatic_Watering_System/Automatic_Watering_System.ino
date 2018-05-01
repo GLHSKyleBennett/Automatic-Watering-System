@@ -69,6 +69,13 @@ void touchscreenLoop() {
     p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft.width());
     p.y = map(p.y, TS_MINY, TS_MAXY, 0, tft.height());
 
+    /* Touchscreen Debugging Code
+    Serial.print("x=");
+    Serial.print(p.x);
+    Serial.print("       y=");
+    Serial.println(p.y);
+    */
+    
   }
 }
 
@@ -78,10 +85,12 @@ void touchscreenLoop() {
 //Beginning Editable Code
 
 
+
 //Setup function
 void setup(void) {
   nonEditableSetup();
-  editableSetup();  
+  //editableSetup();  
+  testPage();
 }
 
 //Begin looping of the program
@@ -89,13 +98,14 @@ void loop() {
   touchscreenLoop();
 }
 
+/*
 void editableSetup() {
   //Initialize Sensors
-  int sensorPinOne = A6;
-  int sensorPinTwo = A7;
-  int sensorPinThree = A8;
-  int sensorPinFour = A9;
-  int sensorPinFive = A10;
+  const int sensorPinOne = A6;
+  const int sensorPinTwo = A7;
+  const int sensorPinThree = A8;
+  const int sensorPinFour = A9;
+  const int sensorPinFive = A10;
 
   pinMode(sensorPinOne, INPUT);
   pinMode(sensorPinTwo, INPUT);
@@ -103,11 +113,11 @@ void editableSetup() {
   pinMode(sensorPinFour, INPUT);
   pinMode(sensorPinFive, INPUT);
 
-  int sensorPowerOne = 7;
-  int sensorPowerTwo = 8;
-  int sensorPowerThree = 9;
-  int sensorPowerFour = 10;
-  int sensorPowerFive = 11;
+  const int sensorPowerOne = 7;
+  const int sensorPowerTwo = 8;
+  const int sensorPowerThree = 9;
+  const int sensorPowerFour = 10;
+  const int sensorPowerFive = 11;
 
   pinMode(sensorPowerOne, OUTPUT);
   pinMode(sensorPowerTwo, OUTPUT);
@@ -116,11 +126,11 @@ void editableSetup() {
   pinMode(sensorPowerFive, OUTPUT);
 
   //Initialize Valves
-  int valvePinOne = 2;
-  int valvePinTwo = 3;
-  int valvePinThree = 4;
-  int valvePinFour = 5;
-  int valvePinFive = 6;
+  const int valvePinOne = 2;
+  const int valvePinTwo = 3;
+  const int valvePinThree = 4;
+  const int valvePinFour = 5;
+  const int valvePinFive = 6;
 
   pinMode(valvePinOne, OUTPUT);
   pinMode(valvePinTwo, OUTPUT);
@@ -128,9 +138,37 @@ void editableSetup() {
   pinMode(valvePinFour, OUTPUT);
   pinMode(valvePinFive, OUTPUT);
 }
+*/
 
+void coordinates() {
+  tft.fillScreen(BLACK);
+  int tempx = 20;
+  int tempy = 20;
+  while(tempx <= tft.width()) {
+    if(tempx % 100 == 0) {
+      tft.drawFastVLine(tempx, 0, 20, GREEN);
+    }
+    else {
+      tft.drawFastVLine(tempx, 0, 10, GREEN);
+    }
+    tempx += 20; 
+  }
+  while(tempy <= tft.height()) {
+    if(tempy % 100 == 0) {
+      tft.drawFastHLine(0, tempy, 20, GREEN);
+    }
+    else {
+      tft.drawFastHLine(0, tempy, 10, GREEN);
+    }
+    tempy += 20;
+  }
+  tft.fillRect(tft.width()-10,0,10,10,GREEN);
+  tft.fillRect(0, tft.height()-10,10,10,RED);
+}
 
-
-
+void testPage() {
+  coordinates();
+  
+}
 
 
