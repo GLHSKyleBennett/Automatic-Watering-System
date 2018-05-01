@@ -79,12 +79,30 @@ void touchscreenLoop() {
   }
 }
 
+  
 
 
 //-------------------------------------------------------------------------------//
 //Beginning Editable Code
 
+//Pinouts
+  const int sensorPowerOne = 7;
+  const int sensorPowerTwo = 8;
+  const int sensorPowerThree = 9;
+  const int sensorPowerFour = 10;
+  const int sensorPowerFive = 11;
 
+  const int sensorPinOne = A6;
+  const int sensorPinTwo = A7;
+  const int sensorPinThree = A8;
+  const int sensorPinFour = A9;
+  const int sensorPinFive = A10;
+
+  const int valvePinOne = 2;
+  const int valvePinTwo = 3;
+  const int valvePinThree = 4;
+  const int valvePinFour = 5;
+  const int valvePinFive = 6;
 
 //Setup function
 void setup(void) {
@@ -96,16 +114,16 @@ void setup(void) {
 //Begin looping of the program
 void loop() {
   touchscreenLoop();
+
+  //Scheduling Loops
+  unsigned long M = millis();
+  
 }
 
 /*
 void editableSetup() {
   //Initialize Sensors
-  const int sensorPinOne = A6;
-  const int sensorPinTwo = A7;
-  const int sensorPinThree = A8;
-  const int sensorPinFour = A9;
-  const int sensorPinFive = A10;
+  
 
   pinMode(sensorPinOne, INPUT);
   pinMode(sensorPinTwo, INPUT);
@@ -113,11 +131,7 @@ void editableSetup() {
   pinMode(sensorPinFour, INPUT);
   pinMode(sensorPinFive, INPUT);
 
-  const int sensorPowerOne = 7;
-  const int sensorPowerTwo = 8;
-  const int sensorPowerThree = 9;
-  const int sensorPowerFour = 10;
-  const int sensorPowerFive = 11;
+
 
   pinMode(sensorPowerOne, OUTPUT);
   pinMode(sensorPowerTwo, OUTPUT);
@@ -126,11 +140,7 @@ void editableSetup() {
   pinMode(sensorPowerFive, OUTPUT);
 
   //Initialize Valves
-  const int valvePinOne = 2;
-  const int valvePinTwo = 3;
-  const int valvePinThree = 4;
-  const int valvePinFour = 5;
-  const int valvePinFive = 6;
+  
 
   pinMode(valvePinOne, OUTPUT);
   pinMode(valvePinTwo, OUTPUT);
