@@ -104,6 +104,18 @@ void touchscreenLoop() {
   const int valvePinFour = 5;
   const int valvePinFive = 6;
 
+//---Initialize Variables---//
+//Timing Loops
+unsigned long prevTenthSecondMillis = 0;
+unsigned long prevSecondMillis = 0;
+unsigned long prevFiveSecondMillis = 0;
+unsigned long prevTenSecondMillis = 0;
+unsigned long prevMinuteMillis = 0;
+unsigned long prevTenMinuteMillis = 0;
+
+//Moisture State Machine
+int moistureState = 0;
+
 //Setup function
 void setup(void) {
   nonEditableSetup();
@@ -117,6 +129,37 @@ void loop() {
 
   //Scheduling Loops
   unsigned long M = millis();
+
+  //Tenth Second Loop
+  if (M - prevTenthSecondMillis >= 100) {
+
+    prevTenthSecondMillis = M;
+  }
+  //One Second Loop
+  if (M - prevSecondMillis >= 1000) {
+
+    prevSecondMillis = M;
+  }
+  //Five Second Loop
+  if (M - prevFiveSecondMillis >= 5000) {
+
+    prevFiveSecondMillis = M;
+  }
+  //Ten Second Loop
+  if (M - prevTenSecondMillis >= 10000) {
+
+    prevTenSecondMillis = M;
+  }
+  //Minute Loop
+  if (M - prevMinuteMillis >= 60000) {
+
+    prevMinuteMillis = M;
+  }
+  //Ten Minute Loop
+  if (M - prevTenMinuteMillis >= 600000) {
+
+    prevTenMinuteMillis = M;
+  }
   
 }
 
@@ -178,6 +221,35 @@ void coordinates() {
 
 void testPage() {
   coordinates();
+  
+}
+
+void checkMoisture() {
+  moistureState = 1;
+}
+
+void moistureStateMachine() {
+  switch (moistureState) {
+    case 0:
+      //Wait to start the machine
+      break;
+    case 1:
+      //Power on the sensors
+      moistureState++;
+      break;
+    case 2:
+      //Read the moisture
+      moistureState++;
+      break;
+    case 3:
+      //Turn off the Sensors
+      moistureState++;
+      break;
+    default:
+      moistureState = 0;
+      break;
+  }
+    
   
 }
 
