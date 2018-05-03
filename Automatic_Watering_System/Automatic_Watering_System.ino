@@ -119,7 +119,7 @@ int moistureState = 0;
 //Setup function
 void setup(void) {
   nonEditableSetup();
-  //editableSetup();  
+  editableSetup();  
   testPage();
 }
 
@@ -163,35 +163,11 @@ void loop() {
   
 }
 
-/*
+
 void editableSetup() {
-  //Initialize Sensors
-  
 
-  pinMode(sensorPinOne, INPUT);
-  pinMode(sensorPinTwo, INPUT);
-  pinMode(sensorPinThree, INPUT);
-  pinMode(sensorPinFour, INPUT);
-  pinMode(sensorPinFive, INPUT);
-
-
-
-  pinMode(sensorPowerOne, OUTPUT);
-  pinMode(sensorPowerTwo, OUTPUT);
-  pinMode(sensorPowerThree, OUTPUT);
-  pinMode(sensorPowerFour, OUTPUT);
-  pinMode(sensorPowerFive, OUTPUT);
-
-  //Initialize Valves
-  
-
-  pinMode(valvePinOne, OUTPUT);
-  pinMode(valvePinTwo, OUTPUT);
-  pinMode(valvePinThree, OUTPUT);
-  pinMode(valvePinFour, OUTPUT);
-  pinMode(valvePinFive, OUTPUT);
 }
-*/
+
 
 void coordinates() {
   tft.fillScreen(BLACK);
@@ -235,6 +211,11 @@ void moistureStateMachine() {
       break;
     case 1:
       //Power on the sensors
+      digitalWrite(sensorPowerOne, HIGH);
+      digitalWrite(sensorPowerTwo, HIGH);
+      digitalWrite(sensorPowerThree, HIGH);
+      digitalWrite(sensorPowerFour, HIGH);
+      digitalWrite(sensorPowerFive, HIGH);
       moistureState++;
       break;
     case 2:
@@ -243,6 +224,11 @@ void moistureStateMachine() {
       break;
     case 3:
       //Turn off the Sensors
+      digitalWrite(sensorPowerOne, LOW);
+      digitalWrite(sensorPowerTwo, LOW);
+      digitalWrite(sensorPowerThree, LOW);
+      digitalWrite(sensorPowerFour, LOW);
+      digitalWrite(sensorPowerFive, LOW);
       moistureState++;
       break;
     default:
