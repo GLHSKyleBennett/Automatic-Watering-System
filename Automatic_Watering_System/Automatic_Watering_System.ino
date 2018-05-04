@@ -137,7 +137,7 @@ void loop() {
   //Scheduling Loops
   unsigned long M = millis();
 
-  //Tenth Second Loop
+  //Hundredth Second Loop (Fastest)
   if (M - prevHundredthSecondMillis >= 10) {
     touchscreenLoop();
     screenSaver();
@@ -168,7 +168,7 @@ void loop() {
 
     prevMinuteMillis = M;
   }
-  //Ten Minute Loop
+  //Ten Minute Loop (Slowest)
   if (M - prevTenMinuteMillis >= 600000) {
 
     prevTenMinuteMillis = M;
@@ -261,4 +261,6 @@ void screenSaver() {
     //Turn Backlight Off 
   }
 }
+
+
 
