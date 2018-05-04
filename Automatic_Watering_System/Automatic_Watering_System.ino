@@ -58,6 +58,9 @@ void nonEditableSetup() {
   pinMode(YP, OUTPUT);
 }
 
+//Screensaver Timer
+unsigned long screenSaverTime = 0;
+
 void touchscreenLoop() {
   //Find the current point where the touchscreen is being touched
   TSPoint p = ts.getPoint();
@@ -75,7 +78,9 @@ void touchscreenLoop() {
     Serial.print("       y=");
     Serial.println(p.y);
     */
-    
+
+    //Reset Screensaver Timeout
+    screenSaverTime = 0;
   }
 }
 
@@ -106,6 +111,7 @@ void touchscreenLoop() {
 
 //---Initialize Variables---//
 //Timing Loops
+unsigned long prevHundredthSecondMillis = 0;
 unsigned long prevTenthSecondMillis = 0;
 unsigned long prevSecondMillis = 0;
 unsigned long prevFiveSecondMillis = 0;
@@ -116,20 +122,27 @@ unsigned long prevTenMinuteMillis = 0;
 //Moisture State Machine
 int moistureState = 0;
 
-//Setup function
+
+//---Setup function---//
 void setup(void) {
   nonEditableSetup();
   editableSetup();  
   testPage();
 }
 
-//Begin looping of the program
+//---Loop function---//
 void loop() {
-  touchscreenLoop();
+  
 
   //Scheduling Loops
   unsigned long M = millis();
 
+  //Tenth Second Loop
+  if (M - prevHundredthSecondMillis >= 10) {
+    touchscreenLoop();
+    screenSaver();
+    prevHundredthSecondMillis = M;
+  }
   //Tenth Second Loop
   if (M - prevTenthSecondMillis >= 100) {
 
@@ -201,6 +214,7 @@ void testPage() {
 }
 
 void checkMoisture() {
+  //Turn on Check Machine
   moistureState = 1;
 }
 
@@ -235,8 +249,16 @@ void moistureStateMachine() {
       moistureState = 0;
       break;
   }
-    
-  
+
 }
 
+void readFromEEPROM() {
+  //Read all values from the machine
+}
+
+void screenSaver() {
+  if (screenSaverTime > 6000) {
+    //Turn Backlight Off 
+  }
+}
 
