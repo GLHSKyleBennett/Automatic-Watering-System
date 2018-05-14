@@ -119,8 +119,30 @@ unsigned long prevTenSecondMillis = 0;
 unsigned long prevMinuteMillis = 0;
 unsigned long prevTenMinuteMillis = 0;
 
-//Moisture State Machine
+//State Machines
 int moistureState = 0;
+int valveState = 0;
+int valveOn = 0;
+
+//Usable Moisture Variables
+int moistureValueOne = 0;
+int moistureValueTwo = 0;
+int moistureValueThree = 0;
+int moistureValueFour = 0;
+int moistureValueFive = 0;
+
+//Min/Max moisture values for each sensor
+int minimumMoistureOne = 0;
+int minimumMoistureTwo = 0;
+int minimumMoistureThree = 0;
+int minimumMoistureFour = 0;
+int minimumMoistureFive = 0;
+
+int maximumMoistureOne = 0;
+int maximumMoistureTwo = 0;
+int maximumMoistureThree = 0;
+int maximumMoistureFour = 0;
+int maximumMoistureFive = 0;
 
 
 //---Setup function---//
@@ -234,6 +256,11 @@ void moistureStateMachine() {
       break;
     case 2:
       //Read the moisture
+      moistureValueOne = digitalRead(sensorPinOne);
+      moistureValueTwo = digitalRead(sensorPinTwo);
+      moistureValueThree = digitalRead(sensorPinThree);
+      moistureValueFour = digitalRead(sensorPinFour);
+      moistureValueFive = digitalRead(sensorPinFive);
       moistureState++;
       break;
     case 3:
@@ -245,11 +272,68 @@ void moistureStateMachine() {
       digitalWrite(sensorPowerFive, LOW);
       moistureState++;
       break;
+    case 4:
+      //Check to see if valves need to be opened
+      valveState = 1;
+      moistureState++;
+      break;
     default:
       moistureState = 0;
       break;
   }
 
+}
+
+void valveStateMachine() {
+  switch (valveState) {
+    case 0:
+      //Wait to start
+      break;
+    case 1:
+      //Check to see if valves need opening, open designated ones
+      if (moistureValueOne <= minimumMoistureOne){
+        digitalWrite(valvePinOne, HIGH);
+        valveOn = 1;
+      }
+      if (moistureValueTwo <= minimumMoistureTwo){
+        digitalWrite(valvePinTwo, HIGH);
+        valveOn = 1;
+      }
+      if (moistureValueThree <= minimumMoistureThree){
+        digitalWrite(valvePinThree, HIGH);
+        valveOn = 1;
+      }
+      if (moistureValueFour <= minimumMoistureFour){
+        digitalWrite(valvePinFour, HIGH);
+        valveOn = 1;
+      }
+      if (moistureValueFive <= minimumMoistureFive){
+        digitalWrite(valvePinFive, HIGH);
+        valveOn = 1;
+      }
+      valveState++;
+      break; 
+    case 2:
+      //Turn off all valves
+      digitalWrite(valvePinOne, LOW);
+      digitalWrite(valvePinTwo, LOW);
+      digitalWrite(valvePinThree, LOW);
+      digitalWrite(valvePinFour, LOW);
+      digitalWrite(valvePinFive, LOW);
+      valveState++;
+      break;
+    case 3:
+      //If a valve goes off, reset the check moisture machine, else kill valve machine
+      if (valveOn == 1) {
+        moistureState = 1;
+      }
+      valveState++;
+      break;
+    default:
+      //Reset the machine
+      valveState = 0;
+      break;
+  }
 }
 
 void readFromEEPROM() {
