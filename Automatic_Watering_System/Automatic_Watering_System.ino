@@ -158,7 +158,7 @@ void loop() {
 
 
 void editableSetup() {
-
+  tft.setRotation(1);
 }
 
 
@@ -186,11 +186,25 @@ void coordinates() {
   }
   tft.fillRect(tft.width()-10,0,10,10,GREEN);
   tft.fillRect(0, tft.height()-10,10,10,RED);
+
+  
 }
 
 void testPage() {
-  coordinates();
+  //coordinates();
   
+  backArrow();
+  tft.fillRect(60,60,360,200,MAGENTA);
+  tft.drawRect(60,60,360,200,WHITE);
+  tft.drawFastHLine(60,110,360,WHITE);
+  tft.drawFastHLine(60,160,360,WHITE);
+  tft.drawFastHLine(60,210,360,WHITE);
+  tft.drawFastVLine(370,60,200,WHITE);
+
+  tft.fillRect(371,61,48,49,RED);
+  tft.fillRect(371,111,48,49,GREEN);
+  tft.fillRect(371,161,48,49,BLUE);
+  tft.fillRect(371,211,48,48,YELLOW);
 }
 
 void readFromEEPROM() {
@@ -203,5 +217,34 @@ void screenSaver() {
   }
 }
 
+void homePage() {
+  tft.fillRect(40,40,400,100,GREEN);
+  tft.drawRect(40,40,400,100,WHITE);
+  tft.fillRect(40,180,260,100,RED);
+  tft.drawRect(40,180,260,100,WHITE);
+  tft.fillRect(340,180,100,100,BLUE);
+  tft.drawRect(340,180,100,100,WHITE);
+
+  tft.setCursor(52,80);
+  tft.setTextColor(BLACK);
+  tft.setTextSize(3);
+  tft.print("View Current Readings");
+
+  tft.setCursor(95,220);
+  tft.print("Settings");
+
+  tft.drawChar(370,202,'i',BLACK,BLUE,8);
+}
+
+void backArrow() {
+  tft.fillRect(10,10,40,40,RED);
+  tft.fillTriangle(15,30,25,20,25,40,BLACK);
+  tft.fillRect(25,25,20,10,BLACK);
+
+  tft.drawRect(10,10,40,40,WHITE);
+  tft.drawTriangle(15,30,25,20,25,40,WHITE);
+  tft.drawRect(25,25,20,10,WHITE);
+  tft.drawFastVLine(25,26,8,BLACK);
+}
 
 
