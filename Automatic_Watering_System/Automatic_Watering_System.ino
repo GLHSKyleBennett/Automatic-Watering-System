@@ -191,20 +191,9 @@ void coordinates() {
 }
 
 void testPage() {
-  //coordinates();
+  coordinates();
   
-  backArrow();
-  tft.fillRect(60,60,360,200,MAGENTA);
-  tft.drawRect(60,60,360,200,WHITE);
-  tft.drawFastHLine(60,110,360,WHITE);
-  tft.drawFastHLine(60,160,360,WHITE);
-  tft.drawFastHLine(60,210,360,WHITE);
-  tft.drawFastVLine(370,60,200,WHITE);
-
-  tft.fillRect(371,61,48,49,RED);
-  tft.fillRect(371,111,48,49,GREEN);
-  tft.fillRect(371,161,48,49,BLUE);
-  tft.fillRect(371,211,48,48,YELLOW);
+  changeSensors();
 }
 
 void readFromEEPROM() {
@@ -245,6 +234,51 @@ void backArrow() {
   tft.drawTriangle(15,30,25,20,25,40,WHITE);
   tft.drawRect(25,25,20,10,WHITE);
   tft.drawFastVLine(25,26,8,BLACK);
+}
+
+void currentReadings() {
+  backArrow();
+  
+  tft.fillRect(60,60,360,200,MAGENTA);
+  tft.drawRect(60,60,360,200,WHITE);
+  tft.drawFastHLine(60,110,360,WHITE);
+  tft.drawFastHLine(60,160,360,WHITE);
+  tft.drawFastHLine(60,210,360,WHITE);
+  tft.drawFastVLine(370,60,200,WHITE);
+
+  tft.fillRect(371,61,48,49,RED);
+  tft.fillRect(371,111,48,49,GREEN);
+  tft.fillRect(371,161,48,49,BLUE);
+  tft.fillRect(371,211,48,48,YELLOW);
+
+  tft.setCursor(310,75);
+  tft.setTextColor(BLACK);
+  tft.setTextSize(3);
+  tft.print(254);
+  tft.setCursor(310,125);
+  tft.print(118);
+  tft.setCursor(310,175);
+  tft.print(148);
+  tft.setCursor(310,225);
+  tft.print(100);
+
+  for (int i = 0; i < 4; i++) {
+  int j = 0;
+  j = 50*i+75;
+  tft.setCursor(70,j);
+  tft.print(1+i);
+  tft.setCursor(100,j);
+  tft.print("Water Level");
+  }
+}
+
+void changeSensors() {
+  backArrow();
+
+  tft.setCursor(160,10);
+  tft.setTextColor(WHITE);
+  tft.setTextSize(3);
+  tft.print("Sensor 1");
 }
 
 
