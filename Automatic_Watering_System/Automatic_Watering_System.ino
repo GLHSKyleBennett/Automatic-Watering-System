@@ -191,9 +191,11 @@ void coordinates() {
 }
 
 void testPage() {
-  coordinates();
+  //coordinates();
   
   changeSensors();
+  //tft.drawFastVLine(240,0,tft.height(),GREEN);
+  //tft.drawFastHLine(0,160,tft.width(),GREEN);
 }
 
 void readFromEEPROM() {
@@ -275,10 +277,35 @@ void currentReadings() {
 void changeSensors() {
   backArrow();
 
-  tft.setCursor(160,10);
+  tft.setCursor(170,10);
   tft.setTextColor(WHITE);
   tft.setTextSize(3);
-  tft.print("Sensor 1");
+  tft.print("Sensor 2");
+
+  tft.fillRect(10,260,50,50,BLUE);
+  tft.drawRect(10,260,50,50,WHITE);
+  tft.setCursor(27,275);
+  tft.print(1);
+
+  tft.fillRect(420,260,50,50,BLUE);
+  tft.drawRect(420,260,50,50,WHITE);
+  tft.setCursor(437,275);
+  tft.print(3);
+
+  tft.fillRect(100,260,280,50,RED);
+  tft.drawRect(100,260,280,50,WHITE);
+  tft.setCursor(205,275);
+  tft.print("Save");
+
+  tft.drawRect(160,135,160,50,WHITE);
+  tft.setCursor(215,150);
+  tft.print(100);
+
+  tft.fillRect(90,135,50,50,WHITE);
+  tft.fillRect(100,159,30,3,BLACK);
+  tft.fillRect(340,135,50,50,WHITE);
+  tft.fillRect(350,159,30,3,BLACK);
+  tft.fillRect(364,145,3,30,BLACK);
 }
 
 
