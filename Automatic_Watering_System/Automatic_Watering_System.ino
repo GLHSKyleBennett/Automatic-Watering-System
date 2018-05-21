@@ -13,9 +13,9 @@
 #define XP 10   // can be a digital pin
 
 //Defining resistance levels for the touchscreen position
-#define TS_MINX 150
-#define TS_MINY 80
-#define TS_MAXX 900
+#define TS_MINX 120
+#define TS_MINY 130
+#define TS_MAXX 950
 #define TS_MAXY 900
 
 //Define pressure min and max
@@ -61,15 +61,17 @@ void nonEditableSetup() {
 //Screensaver Timer
 unsigned long screenSaverTime = 0;
 
+TSPoint p = TSPoint(0,0,0);
+
 void touchscreenLoop() {
   //Find the current point where the touchscreen is being touched
-  TSPoint p = ts.getPoint();
+  p = ts.getPoint();
   
   //Detect if the screen is being touched currently
   if (p.z > MINPRESSURE && p.z < MAXPRESSURE) {
     
     // scale from 0->1023 to tft.width
-    p.x = map(p.x, TS_MINX, TS_MAXX, 0, tft.width());
+    p.x = map(p.x, TS_MAXX, TS_MINX, 0, tft.width());
     p.y = map(p.y, TS_MINY, TS_MAXY, 0, tft.height());
 
     /* Touchscreen Debugging Code
@@ -101,13 +103,13 @@ unsigned long prevTenSecondMillis = 0;
 unsigned long prevMinuteMillis = 0;
 unsigned long prevTenMinuteMillis = 0;
 
-
+int view = 1;
 
 //---Setup function---//
 void setup(void) {
   nonEditableSetup();
   editableSetup();  
-  testPage();
+  //testPage();
 }
 
 //---Loop function---//
@@ -125,7 +127,7 @@ void loop() {
   }
   //Tenth Second Loop
   if (M - prevTenthSecondMillis >= 100) {
-
+    checkTouchCurrentReadings();
     prevTenthSecondMillis = M;
   }
   //One Second Loop
@@ -140,7 +142,7 @@ void loop() {
   }
   //Ten Second Loop
   if (M - prevTenSecondMillis >= 10000) {
-
+    //changeViews();
     prevTenSecondMillis = M;
   }
   //Minute Loop
@@ -191,9 +193,9 @@ void coordinates() {
 }
 
 void testPage() {
-  //coordinates();
+  coordinates();
   
-  changeSensors();
+  currentReadings();
   //tft.drawFastVLine(240,0,tft.height(),GREEN);
   //tft.drawFastHLine(0,160,tft.width(),GREEN);
 }
@@ -262,7 +264,7 @@ void currentReadings() {
   tft.setCursor(310,175);
   tft.print(148);
   tft.setCursor(310,225);
-  tft.print(100);
+  tft.print(217);
 
   for (int i = 0; i < 4; i++) {
   int j = 0;
@@ -308,4 +310,82 @@ void changeSensors() {
   tft.fillRect(364,145,3,30,BLACK);
 }
 
+void changeViews() {
+  tft.fillScreen(BLACK);
+  switch (view) {
+    case 1:
+      homePage();
+      break;
+    case 2:
+      currentReadings();
+      break;
+    default:
+      view = 0;
+      changeSensors();
+      break;
+  }
+  view++;
+}
+
+void checkTouchChangeSensors() {
+  //Back Arrow
+  if (p.x > 10 && p.y > 10 && p.x < 50 && p.y < 50) {
+    Serial.println("Back Arrow");
+  }
+  //Minus
+  if (p.x > 90 && p.y > 135 && p.x < 140 && p.y < 185) {
+    Serial.println("Minus");
+  }
+  //Plus
+  if (p.x > 340 && p.y > 135 && p.x < 390 && p.y < 235) {
+    Serial.println("Plus");
+  }
+  //Last Sensor
+  if (p.x > 10 && p.y > 260 && p.x < 60 && p.y < 310) {
+    Serial.println("Previous Sensor");
+  }
+  //Next Sensor
+  if (p.x > 420 && p.y > 260 && p.x < 470 && p.y < 310) {
+    Serial.println("Next Sensor");
+  }
+  //Save Button
+  if (p.x > 100 && p.y > 260 && p.x < 380 && p.y < 310) {
+    Serial.println("Save");
+  }
+}
+
+void checkTouchHomePage() {
+  //Current Readings Button 
+  if (p.x > 40 && p.y > 40 && p.x < 440 && p.y < 140) {
+    Serial.println("View Current Readings");
+  }
+  //Settings Button
+  if (p.x > 40 && p.y > 180 && p.x < 300 && p.y < 280) {
+    Serial.println("Settings");
+  }
+  //Information Button
+  if (p.x > 340 && p.y > 180 && p.x < 440 && p.y < 280) {
+    Serial.println("Information");
+  }
+}
+
+void checkTouchCurrentReadings() {
+  //Back Arrow
+  if (p.x > 10 && p.y > 10 && p.x < 50 && p.y < 50) {
+    Serial.println("Back Arrow");
+  }
+}
+
+void checkTouch() {
+  switch (view) {
+    case 1:
+      checkTouchHomePage();
+      break;
+    case 2:
+      checkTouchChangeSensors();
+      break;
+    case 3:
+      checkTouchCurrentReadings();
+  }
+}
 
