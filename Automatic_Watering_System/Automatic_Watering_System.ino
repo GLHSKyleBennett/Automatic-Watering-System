@@ -63,6 +63,8 @@ unsigned long screenSaverTime = 0;
 
 TSPoint p = TSPoint(0,0,0);
 
+bool lastTouch = LOW;
+
 void touchscreenLoop() {
   //Find the current point where the touchscreen is being touched
   p = ts.getPoint();
@@ -73,20 +75,28 @@ void touchscreenLoop() {
     // scale from 0->1023 to tft.width
     p.x = map(p.x, TS_MAXX, TS_MINX, 0, tft.width());
     p.y = map(p.y, TS_MINY, TS_MAXY, 0, tft.height());
-
+    
     /* Touchscreen Debugging Code
     Serial.print("x=");
     Serial.print(p.x);
     Serial.print("       y=");
     Serial.println(p.y);
     */
-
+    
     //Reset Screensaver Timeout
     screenSaverTime = 0;
+    
+    if (!lastTouch) {
+      lastTouch = HIGH;
+      checkTouch();
+    }
+  }
+  else {
+    lastTouch = LOW;
   }
 }
 
-  
+
 
 
 //-------------------------------------------------------------------------------//
@@ -104,6 +114,13 @@ unsigned long prevMinuteMillis = 0;
 unsigned long prevTenMinuteMillis = 0;
 
 int view = 1;
+int prevView = 0;
+int sensor = 1;
+
+int minMoisture[] = {100,100,100,100};
+int sensorPins[] = {1,2,3,4};
+int moisture[] = {0,0,0,0};
+int valvePins[] = {5,6,7,8};
 
 //---Setup function---//
 void setup(void) {
@@ -121,13 +138,14 @@ void loop() {
 
   //Hundredth Second Loop (Fastest)
   if (M - prevHundredthSecondMillis >= 10) {
-    touchscreenLoop();
+    
     //screenSaver();
     prevHundredthSecondMillis = M;
   }
   //Tenth Second Loop
   if (M - prevTenthSecondMillis >= 100) {
-    checkTouchCurrentReadings();
+    touchscreenLoop();
+    updateView();
     prevTenthSecondMillis = M;
   }
   //One Second Loop
@@ -250,21 +268,21 @@ void currentReadings() {
   tft.drawFastHLine(60,210,360,WHITE);
   tft.drawFastVLine(370,60,200,WHITE);
 
-  tft.fillRect(371,61,48,49,RED);
+  tft.fillRect(371,61,48,49,BLUE);
   tft.fillRect(371,111,48,49,GREEN);
-  tft.fillRect(371,161,48,49,BLUE);
-  tft.fillRect(371,211,48,48,YELLOW);
+  tft.fillRect(371,161,48,49,BLACK);
+  tft.fillRect(371,211,48,48,WHITE);
 
   tft.setCursor(310,75);
   tft.setTextColor(BLACK);
   tft.setTextSize(3);
   tft.print(254);
   tft.setCursor(310,125);
-  tft.print(118);
+  tft.print(217);
   tft.setCursor(310,175);
   tft.print(148);
   tft.setCursor(310,225);
-  tft.print(217);
+  tft.print(118);
 
   for (int i = 0; i < 4; i++) {
   int j = 0;
@@ -279,35 +297,59 @@ void currentReadings() {
 void changeSensors() {
   backArrow();
 
-  tft.setCursor(170,10);
-  tft.setTextColor(WHITE);
-  tft.setTextSize(3);
-  tft.print("Sensor 2");
-
-  tft.fillRect(10,260,50,50,BLUE);
-  tft.drawRect(10,260,50,50,WHITE);
-  tft.setCursor(27,275);
-  tft.print(1);
-
-  tft.fillRect(420,260,50,50,BLUE);
-  tft.drawRect(420,260,50,50,WHITE);
-  tft.setCursor(437,275);
-  tft.print(3);
-
+  changeSensor();
+  
   tft.fillRect(100,260,280,50,RED);
   tft.drawRect(100,260,280,50,WHITE);
   tft.setCursor(205,275);
   tft.print("Save");
 
-  tft.drawRect(160,135,160,50,WHITE);
-  tft.setCursor(215,150);
-  tft.print(100);
+  
 
   tft.fillRect(90,135,50,50,WHITE);
   tft.fillRect(100,159,30,3,BLACK);
   tft.fillRect(340,135,50,50,WHITE);
   tft.fillRect(350,159,30,3,BLACK);
   tft.fillRect(364,145,3,30,BLACK);
+}
+
+void changeSensor() {
+  tft.fillRect(170,10,150,50,BLACK);
+  tft.setCursor(170,10);
+  tft.setTextColor(WHITE);
+  tft.setTextSize(3);
+  tft.print("Sensor");
+  tft.setCursor(290,10);
+  tft.print(sensor);
+
+  if (sensor != 1) {
+    tft.fillRect(10,260,50,50,BLUE);
+    tft.drawRect(10,260,50,50,WHITE);
+    tft.setCursor(27,275);
+    tft.print(sensor-1);
+  }
+  else {
+    tft.fillRect(10,260,50,50,BLACK);
+  }
+
+  if (sensor != 4) {
+    tft.fillRect(420,260,50,50,BLUE);
+    tft.drawRect(420,260,50,50,WHITE);
+    tft.setCursor(437,275);
+    tft.print(sensor+1);
+  }
+  else {
+     tft.fillRect(420,260,50,50,BLACK);
+  }
+
+  changeMoisture();
+}
+
+void changeMoisture() {
+  tft.fillRect(160,135,160,50,BLACK);
+  tft.drawRect(160,135,160,50,WHITE);
+  tft.setCursor(215,150);
+  tft.print(minMoisture[sensor-1]);
 }
 
 void changeViews() {
@@ -331,22 +373,37 @@ void checkTouchChangeSensors() {
   //Back Arrow
   if (p.x > 10 && p.y > 10 && p.x < 50 && p.y < 50) {
     Serial.println("Back Arrow");
+    view = 1;
   }
   //Minus
   if (p.x > 90 && p.y > 135 && p.x < 140 && p.y < 185) {
     Serial.println("Minus");
+    if (minMoisture[sensor-1] > 0) {
+      minMoisture[sensor-1] -= 10;
+      changeMoisture();
+    }
   }
   //Plus
   if (p.x > 340 && p.y > 135 && p.x < 390 && p.y < 235) {
     Serial.println("Plus");
+    minMoisture[sensor-1] += 10;
+    changeMoisture();
   }
   //Last Sensor
   if (p.x > 10 && p.y > 260 && p.x < 60 && p.y < 310) {
     Serial.println("Previous Sensor");
+    if (sensor != 1) {
+      sensor--;
+      changeSensor();
+    }
   }
   //Next Sensor
   if (p.x > 420 && p.y > 260 && p.x < 470 && p.y < 310) {
     Serial.println("Next Sensor");
+    if (sensor != 4) {
+      sensor++;
+      changeSensor();
+    }
   }
   //Save Button
   if (p.x > 100 && p.y > 260 && p.x < 380 && p.y < 310) {
@@ -358,10 +415,12 @@ void checkTouchHomePage() {
   //Current Readings Button 
   if (p.x > 40 && p.y > 40 && p.x < 440 && p.y < 140) {
     Serial.println("View Current Readings");
+    view = 3;
   }
   //Settings Button
   if (p.x > 40 && p.y > 180 && p.x < 300 && p.y < 280) {
     Serial.println("Settings");
+    view = 2;
   }
   //Information Button
   if (p.x > 340 && p.y > 180 && p.x < 440 && p.y < 280) {
@@ -373,6 +432,7 @@ void checkTouchCurrentReadings() {
   //Back Arrow
   if (p.x > 10 && p.y > 10 && p.x < 50 && p.y < 50) {
     Serial.println("Back Arrow");
+    view = 1;
   }
 }
 
@@ -386,6 +446,23 @@ void checkTouch() {
       break;
     case 3:
       checkTouchCurrentReadings();
+  }
+}
+
+void updateView() {
+  if (view != prevView) {
+   tft.fillScreen(BLACK);
+   switch (view) {
+    case 1:
+      homePage();
+      break;
+    case 2:
+      changeSensors();
+      break;
+    case 3:
+      currentReadings();
+    }
+    prevView = view;
   }
 }
 
