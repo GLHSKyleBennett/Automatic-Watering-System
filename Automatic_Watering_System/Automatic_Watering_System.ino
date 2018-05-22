@@ -105,22 +105,19 @@ void touchscreenLoop() {
 
 //---Initialize Variables---//
 //Timing Loops
-unsigned long prevHundredthSecondMillis = 0;
-unsigned long prevTenthSecondMillis = 0;
-unsigned long prevSecondMillis = 0;
-unsigned long prevFiveSecondMillis = 0;
-unsigned long prevTenSecondMillis = 0;
-unsigned long prevMinuteMillis = 0;
-unsigned long prevTenMinuteMillis = 0;
+unsigned long prevMillis[] = {0,0,0,0,0,0,0};
 
 int view = 1;
 int prevView = 0;
 int sensor = 1;
+int moistureState = 0;
+int valveState = 0;
 
-int minMoisture[] = {100,100,100,100};
-int sensorPins[] = {1,2,3,4};
 int moisture[] = {0,0,0,0};
-int valvePins[] = {5,6,7,8};
+int minMoisture[] = {100,100,100,100};
+int sensorPin[] = {A8,A9,A10,A11};
+int sensorPower[] = {40,41,42,43};
+int valvePin[] = {5,6,7,8};
 
 //---Setup function---//
 void setup(void) {
@@ -137,41 +134,41 @@ void loop() {
   unsigned long M = millis();
 
   //Hundredth Second Loop (Fastest)
-  if (M - prevHundredthSecondMillis >= 10) {
+  if (M - prevMillis[0] >= 10) {
     
     //screenSaver();
-    prevHundredthSecondMillis = M;
+    prevMillis[0] = M;
   }
   //Tenth Second Loop
-  if (M - prevTenthSecondMillis >= 100) {
+  if (M - prevMillis[1] >= 100) {
     touchscreenLoop();
     updateView();
-    prevTenthSecondMillis = M;
+    prevMillis[1] = M;
   }
   //One Second Loop
-  if (M - prevSecondMillis >= 1000) {
+  if (M - prevMillis[2] >= 1000) {
 
-    prevSecondMillis = M;
+    prevMillis[2] = M;
   }
   //Five Second Loop
-  if (M - prevFiveSecondMillis >= 5000) {
+  if (M - prevMillis[3] >= 5000) {
 
-    prevFiveSecondMillis = M;
+    prevMillis[3] = M;
   }
   //Ten Second Loop
-  if (M - prevTenSecondMillis >= 10000) {
+  if (M - prevMillis[4] >= 10000) {
     //changeViews();
-    prevTenSecondMillis = M;
+    prevMillis[4] = M;
   }
   //Minute Loop
-  if (M - prevMinuteMillis >= 60000) {
+  if (M - prevMillis[5] >= 60000) {
 
-    prevMinuteMillis = M;
+    prevMillis[5] = M;
   }
   //Ten Minute Loop (Slowest)
-  if (M - prevTenMinuteMillis >= 600000) {
+  if (M - prevMillis[6] >= 600000) {
 
-    prevTenMinuteMillis = M;
+    prevMillis[6] = M;
   }
   
 }
@@ -465,4 +462,59 @@ void updateView() {
     prevView = view;
   }
 }
+
+void moistureStateMachine() {
+  switch (moistureState) {
+    case 0:
+      //wait
+      break;
+    case 1:
+      //Power on Sensors
+      for (int i = 0; i < 5; i++) {
+        digitalWrite(sensorPower[i], HIGH);
+      }
+      moistureState++;
+      break;
+    case 2:
+      //Read Values
+      for (int i = 0; i < 5; i++) {
+        moisture[i] = analogRead(sensorPin[i]);
+      }
+      break;
+    case 3:
+      //Turn off sensors
+      for (int i = 0; i < 5; i++) {
+        digitalWrite(sensorPower[i], LOW);
+      }
+      break;
+    case 4:
+      //Run ValveStateMachine
+      valveState = 1;
+      moistureState++;
+      break;
+    default:
+      //Turn off machine
+      moistureState = 0;
+      break;
+  }
+}
+
+void valveStateMachine() {
+  switch (valveState) {
+    case 0:
+      //wait
+      break;
+    case 1:
+      //Check if valves need to be opened, open them
+      for (int i = 0; i < 5; i++) {
+        if (moisture[i] > minMoisture[i]) {
+          digitalWrite(valvePin[i],HIGH);
+        }
+      }
+      break;
+  }
+}
+
+
+
 
