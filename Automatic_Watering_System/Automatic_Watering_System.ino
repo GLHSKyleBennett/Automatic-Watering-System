@@ -512,6 +512,9 @@ void valveStateMachine() {
         }
       }
       break;
+    case 2:
+
+      break;
   }
 }
 
