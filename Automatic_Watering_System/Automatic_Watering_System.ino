@@ -112,6 +112,7 @@ int prevView = 0;
 int sensor = 1;
 int moistureState = 0;
 int valveState = 0;
+bool valveOn = LOW;
 
 int moisture[] = {0,0,0,0};
 int minMoisture[] = {100,100,100,100};
@@ -147,6 +148,8 @@ void loop() {
   }
   //One Second Loop
   if (M - prevMillis[2] >= 1000) {
+    moistureStateMachine();
+    valveStateMachine();
 
     prevMillis[2] = M;
   }
@@ -167,6 +170,7 @@ void loop() {
   }
   //Ten Minute Loop (Slowest)
   if (M - prevMillis[6] >= 600000) {
+    moistureState = 1;
 
     prevMillis[6] = M;
   }
@@ -265,21 +269,44 @@ void currentReadings() {
   tft.drawFastHLine(60,210,360,WHITE);
   tft.drawFastVLine(370,60,200,WHITE);
 
-  tft.fillRect(371,61,48,49,BLUE);
-  tft.fillRect(371,111,48,49,GREEN);
-  tft.fillRect(371,161,48,49,BLACK);
-  tft.fillRect(371,211,48,48,WHITE);
+  if (moisture[0] < minMoisture[0]) {
+    tft.fillRect(371,61,48,49,RED);
+  }
+  else {
+    tft.fillRect(371,61,48,49,GREEN);
+  }
+  
+  if (moisture[1] < minMoisture[1]) {
+    tft.fillRect(371,111,48,49,RED);
+  }
+  else {
+    tft.fillRect(371,111,48,49,GREEN);
+  }
+  
+  if (moisture[2] < minMoisture[2]) {
+    tft.fillRect(371,161,48,49,RED);
+  }
+  else {
+    tft.fillRect(371,161,48,49,GREEN);
+  }
+  
+  if (moisture[3] < minMoisture[3]) {
+    tft.fillRect(371,211,48,48,RED);
+  }
+  else {
+    tft.fillRect(371,211,48,48,GREEN);
+  }
 
   tft.setCursor(310,75);
   tft.setTextColor(BLACK);
   tft.setTextSize(3);
-  tft.print(254);
+  tft.print(moisture[0]);
   tft.setCursor(310,125);
-  tft.print(217);
+  tft.print(moisture[1]);
   tft.setCursor(310,175);
-  tft.print(148);
+  tft.print(moisture[2]);
   tft.setCursor(310,225);
-  tft.print(118);
+  tft.print(moisture[3]);
 
   for (int i = 0; i < 4; i++) {
   int j = 0;
@@ -480,12 +507,14 @@ void moistureStateMachine() {
       for (int i = 0; i < 5; i++) {
         moisture[i] = analogRead(sensorPin[i]);
       }
+      moistureState++;
       break;
     case 3:
       //Turn off sensors
       for (int i = 0; i < 5; i++) {
         digitalWrite(sensorPower[i], LOW);
       }
+      moistureState++;
       break;
     case 4:
       //Run ValveStateMachine
@@ -509,11 +538,28 @@ void valveStateMachine() {
       for (int i = 0; i < 5; i++) {
         if (moisture[i] > minMoisture[i]) {
           digitalWrite(valvePin[i],HIGH);
+          valveOn = HIGH;
         }
       }
+      valveState++;
       break;
     case 2:
-
+      if (valveOn) {
+        for (int i = 0; i < 5; i++) {
+          digitalWrite(valvePin[i],LOW);
+        }
+      }
+      valveState++;
+      break;
+    case 3:
+      if (valveOn) {
+        valveOn = LOW;
+        moistureState = 1;
+      }
+      valveState++;
+      break;
+    default:
+      valveState = 0;
       break;
   }
 }
