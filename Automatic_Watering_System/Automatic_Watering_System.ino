@@ -5,6 +5,7 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_TFTLCD.h> // Hardware-specific library
 #include <TouchScreen.h>
+#include <EEPROM.h>
 
 //Defining Pins
 #define YP A5  // must be an analog pin, use "An" notation!
@@ -180,6 +181,10 @@ void loop() {
 
 void editableSetup() {
   tft.setRotation(1);
+
+  for (int i = 0; i < 4; i++) {
+    minMoisture[i] = EEPROM.read(i+1);
+  }
 }
 
 
@@ -398,6 +403,7 @@ void checkTouchChangeSensors() {
   if (p.x > 10 && p.y > 10 && p.x < 50 && p.y < 50) {
     Serial.println("Back Arrow");
     view = 1;
+    minMoisture[sensor-1] = EEPROM.read(sensor);
   }
   //Minus
   if (p.x > 90 && p.y > 135 && p.x < 140 && p.y < 185) {
@@ -417,6 +423,7 @@ void checkTouchChangeSensors() {
   if (p.x > 10 && p.y > 260 && p.x < 60 && p.y < 310) {
     Serial.println("Previous Sensor");
     if (sensor != 1) {
+      minMoisture[sensor-1] = EEPROM.read(sensor);
       sensor--;
       changeSensor();
     }
@@ -425,6 +432,7 @@ void checkTouchChangeSensors() {
   if (p.x > 420 && p.y > 260 && p.x < 470 && p.y < 310) {
     Serial.println("Next Sensor");
     if (sensor != 4) {
+      minMoisture[sensor-1] = EEPROM.read(sensor);
       sensor++;
       changeSensor();
     }
@@ -432,6 +440,7 @@ void checkTouchChangeSensors() {
   //Save Button
   if (p.x > 100 && p.y > 260 && p.x < 380 && p.y < 310) {
     Serial.println("Save");
+    saveFunction();
   }
 }
 
@@ -564,6 +573,8 @@ void valveStateMachine() {
   }
 }
 
-
+void saveFunction() {
+  EEPROM.update(sensor, minMoisture[sensor-1]);
+}
 
 
