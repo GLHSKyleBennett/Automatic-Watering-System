@@ -185,6 +185,12 @@ void editableSetup() {
   for (int i = 0; i < 4; i++) {
     minMoisture[i] = EEPROM.read(i+1);
   }
+
+  for (int i = 0; i < 4; i++) {
+    pinMode(sensorPin[i], INPUT);
+    pinMode(valvePin[i], OUTPUT);
+    pinMode(sensorPower[i], OUTPUT);
+  }
 }
 
 
