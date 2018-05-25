@@ -120,12 +120,12 @@ int minMoisture[] = {100,100,100,100};
 int sensorPin[] = {A8,A9,A10,A11};
 int sensorPower[] = {40,41,42,43};
 int valvePin[] = {5,6,7,8};
+bool toggleSensors[] = {LOW,LOW,LOW,LOW};
 
 //---Setup function---//
 void setup(void) {
   nonEditableSetup();
   editableSetup();  
-  //testPage();
 }
 
 //---Loop function---//
@@ -191,47 +191,6 @@ void editableSetup() {
     pinMode(valvePin[i], OUTPUT);
     pinMode(sensorPower[i], OUTPUT);
   }
-}
-
-
-void coordinates() {
-  tft.fillScreen(BLACK);
-  int tempx = 20;
-  int tempy = 20;
-  while(tempx <= tft.width()) {
-    if(tempx % 100 == 0) {
-      tft.drawFastVLine(tempx, 0, 20, GREEN);
-    }
-    else {
-      tft.drawFastVLine(tempx, 0, 10, GREEN);
-    }
-    tempx += 20; 
-  }
-  while(tempy <= tft.height()) {
-    if(tempy % 100 == 0) {
-      tft.drawFastHLine(0, tempy, 20, GREEN);
-    }
-    else {
-      tft.drawFastHLine(0, tempy, 10, GREEN);
-    }
-    tempy += 20;
-  }
-  tft.fillRect(tft.width()-10,0,10,10,GREEN);
-  tft.fillRect(0, tft.height()-10,10,10,RED);
-
-  
-}
-
-void testPage() {
-  coordinates();
-  
-  currentReadings();
-  //tft.drawFastVLine(240,0,tft.height(),GREEN);
-  //tft.drawFastHLine(0,160,tft.width(),GREEN);
-}
-
-void readFromEEPROM() {
-  //Read all values from the machine
 }
 
 void screenSaver() {
@@ -387,21 +346,18 @@ void changeMoisture() {
   tft.print(minMoisture[sensor-1]);
 }
 
-void changeViews() {
+void informationPage() {
   tft.fillScreen(BLACK);
-  switch (view) {
-    case 1:
-      homePage();
-      break;
-    case 2:
-      currentReadings();
-      break;
-    default:
-      view = 0;
-      changeSensors();
-      break;
-  }
-  view++;
+  
+  backArrow();
+
+  tft.setCursor(0,60);
+  tft.setTextWrap(HIGH);
+  tft.setTextColor(WHITE);
+  tft.setTextSize(3);
+
+  //Ignore Spacing Issues. It looks fine on LCD
+  tft.print("This project was created  by Kyle Bennett from April2016 to June 2018.This waspossible due to funding I received from the GLCSF.  Be sure to customize and  toggle sensors in the     settings section. Don't   forget to save!");
 }
 
 void checkTouchChangeSensors() {
@@ -464,10 +420,19 @@ void checkTouchHomePage() {
   //Information Button
   if (p.x > 340 && p.y > 180 && p.x < 440 && p.y < 280) {
     Serial.println("Information");
+    view = 4;
   }
 }
 
 void checkTouchCurrentReadings() {
+  //Back Arrow
+  if (p.x > 10 && p.y > 10 && p.x < 50 && p.y < 50) {
+    Serial.println("Back Arrow");
+    view = 1;
+  }
+}
+
+void checkTouchInformationPage() {
   //Back Arrow
   if (p.x > 10 && p.y > 10 && p.x < 50 && p.y < 50) {
     Serial.println("Back Arrow");
@@ -485,6 +450,10 @@ void checkTouch() {
       break;
     case 3:
       checkTouchCurrentReadings();
+      break;
+    case 4:
+      checkTouchInformationPage();
+      break;
   }
 }
 
@@ -500,6 +469,10 @@ void updateView() {
       break;
     case 3:
       currentReadings();
+      break;
+    case 4:
+      informationPage();
+      break;
     }
     prevView = view;
   }
