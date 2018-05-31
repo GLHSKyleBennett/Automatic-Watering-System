@@ -44,6 +44,7 @@ TouchScreen ts = TouchScreen(YM, XM, YP, XP, 300);
 //Initialize LCD
 Adafruit_TFTLCD tft(LCD_CS, LCD_CD, LCD_WR, LCD_RD, A4);
 
+//Runs setup that is not editable
 void nonEditableSetup() {
   //Begin serial communication for debugging
   Serial.begin(9600);
@@ -108,6 +109,7 @@ void touchscreenLoop() {
 //Timing Loops
 unsigned long prevMillis[] = {0,0,0,0,0,0,0};
 
+//Various variables used throughout the code
 int view = 1;
 int prevView = 0;
 int sensor = 1;
@@ -115,6 +117,7 @@ int moistureState = 0;
 int valveState = 0;
 bool valveOn = LOW;
 
+//Arrays for pinouts and moisture values
 int moisture[] = {0,0,0,0};
 int minMoisture[] = {100,100,100,100};
 int sensorPin[] = {A8,A9,A10,A11};
@@ -178,7 +181,7 @@ void loop() {
   
 }
 
-
+//Runs the setup that can be edited
 void editableSetup() {
   tft.setRotation(1);
 
@@ -193,12 +196,17 @@ void editableSetup() {
   }
 }
 
+//Turns backlight off when the screen runs for too long to save on battery
 void screenSaver() {
   if (screenSaverTime > 6000) {
     //Turn Backlight Off 
   }
+  else {
+    //Turn Backlight On
+  }
 }
 
+//Displays the home page
 void homePage() {
   tft.fillRect(40,40,400,100,GREEN);
   tft.drawRect(40,40,400,100,WHITE);
@@ -218,6 +226,7 @@ void homePage() {
   tft.drawChar(370,202,'i',BLACK,BLUE,8);
 }
 
+//Back Arrow Sprite
 void backArrow() {
   tft.fillRect(10,10,40,40,RED);
   tft.fillTriangle(15,30,25,20,25,40,BLACK);
@@ -229,6 +238,7 @@ void backArrow() {
   tft.drawFastVLine(25,26,8,BLACK);
 }
 
+//Displays the current readings page
 void currentReadings() {
   backArrow();
   
@@ -288,6 +298,7 @@ void currentReadings() {
   }
 }
 
+//Displays the settings/change sensors page
 void changeSensors() {
   backArrow();
 
@@ -307,6 +318,7 @@ void changeSensors() {
   tft.fillRect(364,145,3,30,BLACK);
 }
 
+//Changes which sensor is being changed
 void changeSensor() {
   tft.fillRect(170,10,150,50,BLACK);
   tft.setCursor(170,10);
@@ -339,6 +351,7 @@ void changeSensor() {
   changeMoisture();
 }
 
+//Changes only the number box on the change sensors page
 void changeMoisture() {
   tft.fillRect(160,135,160,50,BLACK);
   tft.drawRect(160,135,160,50,WHITE);
@@ -346,6 +359,7 @@ void changeMoisture() {
   tft.print(minMoisture[sensor-1]);
 }
 
+//Displays the information page
 void informationPage() {
   tft.fillScreen(BLACK);
   
@@ -360,6 +374,7 @@ void informationPage() {
   tft.print("This project was created  by Kyle Bennett from April2016 to June 2018.This waspossible due to funding I received from the GLCSF.  Be sure to customize and  toggle sensors in the     settings section. Don't   forget to save!");
 }
 
+//Touch Detection on the change sensors page
 void checkTouchChangeSensors() {
   //Back Arrow
   if (p.x > 10 && p.y > 10 && p.x < 50 && p.y < 50) {
@@ -406,6 +421,7 @@ void checkTouchChangeSensors() {
   }
 }
 
+//Touch Detection on the home page
 void checkTouchHomePage() {
   //Current Readings Button 
   if (p.x > 40 && p.y > 40 && p.x < 440 && p.y < 140) {
@@ -424,6 +440,7 @@ void checkTouchHomePage() {
   }
 }
 
+//Touch Detection on the current readings page
 void checkTouchCurrentReadings() {
   //Back Arrow
   if (p.x > 10 && p.y > 10 && p.x < 50 && p.y < 50) {
@@ -432,6 +449,7 @@ void checkTouchCurrentReadings() {
   }
 }
 
+//Touch Detection on the information page
 void checkTouchInformationPage() {
   //Back Arrow
   if (p.x > 10 && p.y > 10 && p.x < 50 && p.y < 50) {
@@ -440,6 +458,7 @@ void checkTouchInformationPage() {
   }
 }
 
+//Runs the touch detection depending on the display being run
 void checkTouch() {
   switch (view) {
     case 1:
@@ -457,6 +476,7 @@ void checkTouch() {
   }
 }
 
+//Chooses what to display on-screen at any given time
 void updateView() {
   if (view != prevView) {
    tft.fillScreen(BLACK);
@@ -478,6 +498,7 @@ void updateView() {
   }
 }
 
+//Powers on and reads data from the sensors, then turns sensors off
 void moistureStateMachine() {
   switch (moistureState) {
     case 0:
@@ -485,21 +506,21 @@ void moistureStateMachine() {
       break;
     case 1:
       //Power on Sensors
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < 4; i++) {
         digitalWrite(sensorPower[i], HIGH);
       }
       moistureState++;
       break;
     case 2:
       //Read Values
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < 4; i++) {
         moisture[i] = analogRead(sensorPin[i]);
       }
       moistureState++;
       break;
     case 3:
       //Turn off sensors
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < 4; i++) {
         digitalWrite(sensorPower[i], LOW);
       }
       moistureState++;
@@ -516,6 +537,7 @@ void moistureStateMachine() {
   }
 }
 
+//Opens the valves that need to be opened, rechecks the moisture if needed
 void valveStateMachine() {
   switch (valveState) {
     case 0:
@@ -523,7 +545,7 @@ void valveStateMachine() {
       break;
     case 1:
       //Check if valves need to be opened, open them
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < 4; i++) {
         if (moisture[i] > minMoisture[i]) {
           digitalWrite(valvePin[i],HIGH);
           valveOn = HIGH;
@@ -533,7 +555,7 @@ void valveStateMachine() {
       break;
     case 2:
       if (valveOn) {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 4; i++) {
           digitalWrite(valvePin[i],LOW);
         }
       }
@@ -552,8 +574,7 @@ void valveStateMachine() {
   }
 }
 
+//Saves the sensor value
 void saveFunction() {
   EEPROM.update(sensor, minMoisture[sensor-1]);
 }
-
-
