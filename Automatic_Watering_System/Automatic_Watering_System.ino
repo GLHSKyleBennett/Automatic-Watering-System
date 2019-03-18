@@ -198,6 +198,13 @@ void loop() {
   
 }
 
+void sensorSet(int sensSet) {
+  digitalWrite(sensorPowerOne, sensSet);
+  digitalWrite(sensorPowerTwo, sensSet);
+  digitalWrite(sensorPowerThree, sensSet);
+  digitalWrite(sensorPowerFour, sensSet);
+  digitalWrite(sensorPowerFive, sensSet);
+}
 
 void editableSetup() {
 
@@ -247,11 +254,7 @@ void moistureStateMachine() {
       break;
     case 1:
       //Power on the sensors
-      digitalWrite(sensorPowerOne, HIGH);
-      digitalWrite(sensorPowerTwo, HIGH);
-      digitalWrite(sensorPowerThree, HIGH);
-      digitalWrite(sensorPowerFour, HIGH);
-      digitalWrite(sensorPowerFive, HIGH);
+      sensorSet(HIGH);
       moistureState++;
       break;
     case 2:
@@ -265,11 +268,7 @@ void moistureStateMachine() {
       break;
     case 3:
       //Turn off the Sensors
-      digitalWrite(sensorPowerOne, LOW);
-      digitalWrite(sensorPowerTwo, LOW);
-      digitalWrite(sensorPowerThree, LOW);
-      digitalWrite(sensorPowerFour, LOW);
-      digitalWrite(sensorPowerFive, LOW);
+      sensorSet(LOW);
       moistureState++;
       break;
     case 4:
